@@ -16,7 +16,7 @@ initial_history = [
         "parts": ["I understand. I'm here to help as a doctor assistant. I'll provide helpful medical information and health advice while reminding users to consult healthcare professionals for serious concerns. How can I assist you today?"]
     }
 ]
-
+#hest
 chat = model.start_chat(history=initial_history)
 
 print("Chatbot started! Type 'exit' to stop.")
