@@ -1,33 +1,33 @@
-import google.generativeai as genai
+from google import genai
+import os
 
-# Replace with your NEW API key
-genai.configure(api_key="AIzaSyBwDid-y53pIS8OIRwhP1xCAE-Cd6S_7yA")
+# Put your API key directly here TEMPORARILY for hackathon demo
+# (But regenerate the key later)
+client = genai.Client(api_key="AIzaSyBwDid-y53pIS8OIRwhP1xCAE-Cd6S_7yA")
 
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = "gemini-2.5-flash"
 
-# Initialize chat with history - setting the bot's role/persona
-initial_history = [
-    {
-        "role": "user",
-        "parts": ["You are a knowledgeable and friendly doctor assistant. You provide helpful medical information, answer health-related questions, and offer general wellness advice. Always remind users to consult with a real healthcare professional for serious concerns."]
-    },
-    {
-        "role": "model",
-        "parts": ["I understand. I'm here to help as a doctor assistant. I'll provide helpful medical information and health advice while reminding users to consult healthcare professionals for serious concerns. How can I assist you today?"]
-    }
-]
-#hest
-chat = model.start_chat(history=initial_history)
+def generate_plan():
+    prompt = """
+User Profile:
+Age: 19
+Mode: Period & Hormones
+Detected Pattern: PCOS Pattern
+Key Symptoms: irregular cycles, acne, weight gain
 
-print("Chatbot started! Type 'exit' to stop.")
-print("(Doctor Assistant Mode - Ask me health-related questions)\n")
+Generate:
+1. A cautious explanation (non-diagnostic).
+2. A 1-day personalized lifestyle plan.
+3. Include medical disclaimer.
+Do not prescribe medication.
+"""
+    
+    response = client.models.generate_content(
+        model=model,
+        contents=prompt
+    )
 
-while True:
-    user_input = input("You: ")
+    print("\n=== AI RESULT ===\n")
+    print(response.text)
 
-    if user_input.lower() == "exit":
-        print("Chatbot ended.")
-        break
-
-    response = chat.send_message(user_input)
-    print("Bot:", response.text)
+generate_plan()
