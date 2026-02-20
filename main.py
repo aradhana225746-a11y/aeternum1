@@ -1,9 +1,10 @@
-from google import genai
 import os
+from google import genai
+from dotenv import load_dotenv
 
-# Put your API key directly here TEMPORARILY for hackathon demo
-# (But regenerate the key later)
-client = genai.Client(api_key="AIzaSyBwDid-y53pIS8OIRwhP1xCAE-Cd6S_7yA")
+load_dotenv()
+
+client = genai.Client(api_key="AIzaSyC-F4ofwwn5PYGzwI92-meUWptFUTc4-3M")
 
 model = "gemini-2.5-flash"
 
@@ -21,7 +22,7 @@ Generate:
 3. Include medical disclaimer.
 Do not prescribe medication.
 """
-    
+
     response = client.models.generate_content(
         model=model,
         contents=prompt
