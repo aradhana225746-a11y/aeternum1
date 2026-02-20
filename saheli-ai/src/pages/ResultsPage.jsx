@@ -1,0 +1,153 @@
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { fetchHealthPlan } from '../api/mockApi';
+
+/* ── Plan section card ────────────────────────────────── */
+function PlanSection({ title, emoji, items, accent }) {
+  return (
+    <div className={`rounded-3xl border p-5 sm:p-6 ${accent}`}>
+      <h4 className="font-display text-lg font-semibold mb-3 flex items-center gap-2">
+        <span className="text-xl">{emoji}</span> {title}
+      </h4>
+      <ul className="space-y-2">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-gray-600">
+            <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-lavender-400 shrink-0" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* ── Main Component ───────────────────────────────────── */
+export default function ResultsPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const answers = location.state;
+
+  const [plan, setPlan] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [translated, setTranslated] = useState(false);
+
+  useEffect(() => {
+    if (!answers) {
+      navigate('/');
+      return;
+    }
+    fetchHealthPlan(answers).then((data) => {
+      setPlan(data);
+      setLoading(false);
+    });
+  }, [answers, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-lavender-100 flex items-center justify-center animate-pulse">
+            <span className="text-3xl">🌸</span>
+          </div>
+          <p className="text-lavender-600 font-medium">Preparing your personalised plan…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!plan) return null;
+
+  const sections = [
+    { title: 'Morning', emoji: '🌅', items: plan.plan.morning, accent: 'bg-amber-50/60 border-amber-200' },
+    { title: 'Afternoon', emoji: '☀️', items: plan.plan.afternoon, accent: 'bg-sky-50/60 border-sky-200' },
+    { title: 'Evening', emoji: '🌇', items: plan.plan.evening, accent: 'bg-orange-50/60 border-orange-200' },
+    { title: 'Night', emoji: '🌙', items: plan.plan.night, accent: 'bg-indigo-50/60 border-indigo-200' },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* ── Top bar ─────────────────────────────────── */}
+      <nav className="w-full px-6 py-4 flex items-center justify-between max-w-4xl mx-auto">
+        <button
+          onClick={() => navigate('/')}
+          className="text-lavender-600 hover:text-lavender-800 font-medium text-sm transition"
+        >
+          ← Home
+        </button>
+        <span className="font-display text-xl font-bold text-lavender-700 tracking-tight">
+          Saheli<span className="text-blush-500">AI</span>
+        </span>
+        <span />
+      </nav>
+
+      {/* ── Content ─────────────────────────────────── */}
+      <main className="flex-1 px-6 pb-16 max-w-3xl mx-auto w-full">
+        {/* Risk badge */}
+        <div className="mt-4 mb-6 flex flex-wrap items-center gap-3">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-lavender-100 text-lavender-700 text-xs font-semibold tracking-wide uppercase">
+            {plan.riskSummary}
+          </span>
+          <button
+            onClick={() => setTranslated(!translated)}
+            className="ml-auto text-xs font-medium border border-lavender-200 rounded-full px-4 py-1.5 text-lavender-600 hover:bg-lavender-50 transition"
+          >
+            {translated ? '🔤 Show Original' : '🌐 Translate'}
+          </button>
+        </div>
+
+        {/* Explanation */}
+        <div className="bg-white/70 backdrop-blur rounded-3xl p-6 border border-lavender-100 shadow-sm mb-8">
+          <h3 className="font-display text-xl font-semibold text-lavender-800 mb-2">
+            What We Found
+          </h3>
+          <p className="text-gray-600 text-sm leading-relaxed">
+            {translated
+              ? '(Translation placeholder) — हम ने आपके उत्तरों के आधार पर कुछ संकेत पाए हैं जो आपके स्वास्थ्य से जुड़े हो सकते हैं। कृपया नीचे दी गई योजना का पालन करें।'
+              : plan.explanation}
+          </p>
+        </div>
+
+        {/* Daily plan */}
+        <h3 className="font-display text-2xl font-semibold text-lavender-800 mb-5">
+          Your Daily Plan
+        </h3>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          {sections.map((s) => (
+            <PlanSection key={s.title} {...s} />
+          ))}
+        </div>
+
+        {/* Disclaimer */}
+        <div className="mt-10 bg-cream-100 rounded-3xl p-5 sm:p-6 border border-cream-300">
+          <p className="text-xs text-amber-700 leading-relaxed">
+            <strong>Disclaimer:</strong> This plan is generated by an AI for general wellness
+            awareness only. It is <strong>not</strong> a medical diagnosis or prescription. Please
+            consult a qualified healthcare professional before making any health decisions.
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <button
+            onClick={() => navigate('/assess')}
+            className="px-6 py-2.5 rounded-full border-2 border-lavender-200 text-lavender-600 font-medium hover:bg-lavender-50 transition text-sm"
+          >
+            Retake Assessment
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-2.5 rounded-full bg-lavender-600 text-white font-semibold shadow-md shadow-lavender-300/40 hover:bg-lavender-700 transition text-sm"
+          >
+            Back to Home
+          </button>
+        </div>
+      </main>
+
+      {/* ── Footer ─────────────────────────────────── */}
+      <footer className="text-center text-xs text-gray-400 pb-6">
+        © {new Date().getFullYear()} Saheli AI · Made with 💜
+      </footer>
+    </div>
+  );
+}
