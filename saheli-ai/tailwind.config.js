@@ -45,8 +45,8 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        body: ['Poppins', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         '4xl': '2rem',
