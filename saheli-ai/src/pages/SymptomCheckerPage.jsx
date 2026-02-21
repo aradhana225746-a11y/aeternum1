@@ -209,7 +209,7 @@ export default function SymptomCheckerPage() {
             className="font-display text-3xl sm:text-4xl font-bold mb-2"
             style={{ color: '#2d3436' }}
           >
-            {t('symptomTitle') || 'Symptom Checker'}
+            {t('Symptom checker') || 'Symptom Checker'}
           </h2>
           <p className="text-sm text-pink-500/80 max-w-md">
             {t('symptomSub') || 'Tap everything that feels relatable rn. No overthinking — just go with your gut, babe. 💕'}

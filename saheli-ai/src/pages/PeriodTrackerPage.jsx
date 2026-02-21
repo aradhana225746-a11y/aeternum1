@@ -241,7 +241,7 @@ export default function PeriodTrackerPage() {
             className="font-display text-3xl sm:text-4xl font-bold mb-2"
             style={{ color: '#2d3436' }}
           >
-            {t('trackerTitle') || 'Period Tracker'}
+            {t('Period Tracker') || 'Period Tracker'}
           </h2>
           <p className="text-sm text-pink-500/80 max-w-md">
             {t('trackerSub') || 'Log your cycle, mood, and symptoms — your body has a rhythm, let\'s learn it together. 💕'}
@@ -528,7 +528,7 @@ export default function PeriodTrackerPage() {
             className="font-display text-xl font-bold mb-4"
             style={{ color: '#2d3436' }}
           >
-            {t('trackerTipsTitle') || 'Cycle Care Tips 💕'}
+            {t('Cycle Care Tips') || 'Cycle Care Tips 💕'}
           </h3>
           <div className="space-y-4">
             {[
@@ -550,7 +550,7 @@ export default function PeriodTrackerPage() {
 
         <div className="border-l-2 border-pink-300 pl-4 py-2 mt-10">
           <p className="text-xs text-pink-500/80">
-            {t('trackerDisclaimer') || 'This tracker is for awareness, not medical prediction. Every body is different — cycle estimates are based on your logged data. 💕'}
+            {t('This tracker is for awareness, not medical prediction. Every body is different — cycle estimates are based on your logged data. 💕') || 'This tracker is for awareness, not medical prediction. Every body is different — cycle estimates are based on your logged data. 💕'}
           </p>
         </div>
 
