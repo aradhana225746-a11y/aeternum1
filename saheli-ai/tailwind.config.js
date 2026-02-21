@@ -4,6 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
+        /* Coral-rose palette from the Trendy Woman image */
+        pink: {
+          50:  '#fce4ec',
+          100: '#f8bbd0',
+          200: '#f48fb1',
+          300: '#f06292',
+          400: '#ec407a',
+          500: '#e8636f',
+          600: '#d4505c',
+          700: '#c0392b',
+          800: '#8e2a2a',
+          900: '#5d1a1a',
+        },
         lavender: {
           50: '#faf8ff',
           100: '#f3eeff',
@@ -45,7 +58,8 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
         body: ['Poppins', 'system-ui', 'sans-serif'],
       },
       borderRadius: {

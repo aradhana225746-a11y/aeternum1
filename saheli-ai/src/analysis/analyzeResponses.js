@@ -200,6 +200,44 @@ function buildDailyPlan(d, mode, risk) {
   const water = Number(d.waterIntake) || 6;
   const isVeg = d.dietType === 'veg';
 
+  if (mode === 'cancer') {
+    return {
+      morning: {
+        label: 'Morning',
+        food: 'Start with warm lemon water. Breakfast: antioxidant-rich smoothie (berries, spinach, flaxseed) or oatmeal topped with walnuts and pomegranate seeds.',
+        activity: 'A 15–20 minute gentle walk in fresh air. Morning sunlight supports vitamin D, which is linked to cancer-protective effects.',
+        hydration: `Stay well hydrated — aim for ${Math.max(8, water + 2)} glasses today. Green tea is a wonderful antioxidant-rich option.`,
+        stress: 'A brief body awareness meditation (5 minutes). Practice your monthly breast self-exam in the shower — it only takes 2 minutes.',
+      },
+      afternoon: {
+        label: 'Afternoon',
+        food: 'Lunch with leafy greens, cruciferous vegetables (broccoli, cabbage, cauliflower), lean protein. These vegetables contain compounds that support cell health.',
+        activity: 'A short 10-minute walk after lunch. Gentle stretching if you\'ve been sitting.',
+        hydration: 'Herbal tea or coconut water. Turmeric + black pepper tea has anti-inflammatory benefits.',
+        stress: 'Journal for 5 minutes — how does your body feel today? Awareness is the first step to care.',
+      },
+      evening: {
+        label: 'Evening',
+        food: 'Snack: fresh fruits (especially citrus for vitamin C), a handful of almonds, or hummus with veggies.',
+        activity: 'Moderate exercise — 30 minutes of yoga, walking, or swimming. Regular physical activity reduces cancer risk.',
+        hydration: 'A calming cup of chamomile or ginger tea.',
+        stress: 'Review your screening schedule. Set a calendar reminder for your next Pap smear and/or mammogram if it\'s due.',
+      },
+      night: {
+        label: 'Night',
+        food: 'A light, nourishing dinner — vegetable soup, grilled fish (if non-veg), or khichdi with greens. Avoid processed or charred foods.',
+        activity: 'Gentle stretching or legs-up-the-wall pose for 5 minutes.',
+        hydration: 'Warm turmeric milk (golden milk) — anti-inflammatory and calming.',
+        stress: sleepQ <= 5
+          ? 'Sleep ritual: dim lights, no screens 30 min before bed. Rest is when your body repairs. Aim for 7–8 hours.'
+          : 'Wind down with a good book or calming music. Rest well — your body heals during sleep.',
+        sleep: sleepH < 7
+          ? `You're getting ~${sleepH} hours. Try to add 30 minutes — quality sleep is vital for immune function.`
+          : 'Your sleep schedule looks healthy. Keep it consistent.',
+      },
+    };
+  }
+
   const plan = {
     morning: {
       label: 'Morning',
@@ -253,9 +291,61 @@ function buildDailyPlan(d, mode, risk) {
   return plan;
 }
 
+/* ── cancer awareness analysis ───────────────────────── */
+function buildCancerReport(d) {
+  const factors = [];
+
+  // Breast
+  if (d.breastLumps === 'yes') factors.push('You mentioned noticing a lump or thickening — this is something a doctor should assess');
+  if (d.breastDischarge === 'yes') factors.push('Nipple discharge was noted — worth mentioning to your doctor');
+  if (d.breastDimpling === 'yes') factors.push('Skin dimpling or puckering noticed — a clinical exam would be reassuring');
+  if (d.breastPain === 'yes') factors.push('Persistent breast pain — usually benign, but worth discussing with a doctor');
+  if (d.breastSkinChanges === 'yes') factors.push('Changes in nipple shape or skin texture were noted');
+  if (d.breastFamilyHistory === 'yes') factors.push('Family history of breast cancer — regular screening is especially important for you');
+  if (d.lastBreastExam === 'over_3_years' || d.lastBreastExam === 'never')
+    factors.push('It\'s been a while since your last breast exam — consider scheduling one');
+
+  // Cervical
+  if (d.irregularBleeding === 'yes') factors.push('Irregular bleeding between periods — a doctor can help understand the cause');
+  if (d.postIntercourseBleeding === 'yes') factors.push('Post-intercourse bleeding — this deserves a medical evaluation');
+  if (d.pelvicPain === 'yes') factors.push('Persistent pelvic pain noted');
+  if (d.unusualDischarge === 'yes') factors.push('Unusual vaginal discharge — may have many causes, worth checking');
+  if (d.cervicalFamilyHistory === 'yes') factors.push('Family history of cervical cancer — regular Pap smears are important');
+  if (d.hpvStatus === 'not_vaccinated') factors.push('HPV vaccination may still be an option — discuss with your doctor');
+  if (d.lastPapSmear === 'over_3_years' || d.lastPapSmear === 'never')
+    factors.push('Consider scheduling a Pap smear — it\'s quick and can catch changes early');
+
+  const lifestyleLinks = [];
+  if (Number(d.stressLevel) >= 7) lifestyleLinks.push('High stress affects immune function and overall health');
+  if (Number(d.sleepQuality) <= 5) lifestyleLinks.push('Quality sleep supports your body\'s natural defense mechanisms');
+  if (d.activityFreq === 'sedentary') lifestyleLinks.push('Regular exercise is one of the strongest cancer-protective habits');
+  if (Number(d.waterIntake) < 6) lifestyleLinks.push('Good hydration supports every system in your body');
+
+  return {
+    summary: factors.length === 0
+      ? 'Based on your responses, no immediate concerns were flagged. Regular self-exams and scheduled screenings are the best gift you can give yourself.'
+      : 'Some of your responses suggest areas where a professional check-up would give you peace of mind. Remember — awareness is not alarm. Most findings turn out to be nothing serious, but early attention is always wise.',
+    factors,
+    lifestyleLinks,
+    calm: 'This is not a screening result or diagnosis. It\'s a gentle awareness check. Early detection is powerful — and you\'re already taking a great step by paying attention. Talk to your doctor about scheduling any recommended screenings.',
+  };
+}
+
 /* ── main export ─────────────────────────────────────── */
 export default function analyzeResponses(formData) {
-  const mode = formData.mode; // 'period' | 'anemia'
+  const mode = formData.mode; // 'period' | 'anemia' | 'cancer'
+
+  if (mode === 'cancer') {
+    const report = buildCancerReport(formData);
+    const dailyPlan = buildDailyPlan(formData, mode, 'screening');
+    return {
+      mode,
+      risk: 'screening',  // cancer mode always returns 'screening'
+      score: 0,
+      report,
+      dailyPlan,
+    };
+  }
 
   const score = mode === 'period'
     ? scorePeriod(formData)

@@ -1,112 +1,48 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation, LANGUAGES } from '../context/TranslationContext';
 
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'hi', label: 'Hindi (हिन्दी)' },
-  { code: 'ta', label: 'Tamil (தமிழ்)' },
-  { code: 'te', label: 'Telugu (తెలుగు)' },
-  { code: 'bn', label: 'Bengali (বাংলা)' },
-  { code: 'mr', label: 'Marathi (मराठी)' },
-  { code: 'es', label: 'Spanish (Español)' },
-  { code: 'fr', label: 'French (Français)' },
-];
-
-const MOCK_TRANSLATIONS = {
-  hi: {
-    morning: 'सुबह',
-    afternoon: 'दोपहर',
-    evening: 'शाम',
-    night: 'रात',
-    note: '(यह एक नमूना अनुवाद है)',
-  },
-  ta: {
-    morning: 'காலை',
-    afternoon: 'மதியம்',
-    evening: 'மாலை',
-    night: 'இரவு',
-    note: '(இது ஒரு மாதிரி மொழிபெயர்ப்பு)',
-  },
-  te: {
-    morning: 'ఉదయం',
-    afternoon: 'మధ్యాహ్నం',
-    evening: 'సాయంత్రం',
-    night: 'రాత్రి',
-    note: '(ఇది ఒక నమూనా అనువాదం)',
-  },
-  bn: {
-    morning: 'সকাল',
-    afternoon: 'দুপুর',
-    evening: 'সন্ধ্যা',
-    night: 'রাত',
-    note: '(এটি একটি নমুনা অনুবাদ)',
-  },
-  mr: {
-    morning: 'सकाळ',
-    afternoon: 'दुपार',
-    evening: 'संध्याकाळ',
-    night: 'रात्र',
-    note: '(हा नमुना अनुवाद आहे)',
-  },
-  es: {
-    morning: 'Mañana',
-    afternoon: 'Tarde',
-    evening: 'Atardecer',
-    night: 'Noche',
-    note: '(Esta es una traducción de ejemplo)',
-  },
-  fr: {
-    morning: 'Matin',
-    afternoon: 'Après-midi',
-    evening: 'Soirée',
-    night: 'Nuit',
-    note: '(Ceci est un exemple de traduction)',
-  },
-};
-
-export default function TranslateButton({ onTranslate }) {
+export default function TranslateButton() {
+  const { lang, setLanguage, isTranslating, t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState('en');
-  const [translating, setTranslating] = useState(false);
 
-  const handleSelect = async (code) => {
-    setSelected(code);
-    setTranslating(true);
+  const handleSelect = (code) => {
     setOpen(false);
-    /* Simulate API call delay */
-    await new Promise((r) => setTimeout(r, 1200));
-    onTranslate(code === 'en' ? null : MOCK_TRANSLATIONS[code] || null);
-    setTranslating(false);
+    setLanguage(code);
   };
 
   return (
     <div className="relative inline-block">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-800/40 border border-purple-600/30 hover:border-purple-500/50 text-purple-200 text-sm font-medium transition-all hover:bg-purple-800/60"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 text-sm font-medium transition-all hover:bg-pink-200"
       >
-        {translating ? 'Translating…' : 'Translate Plan'}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" />
+          <path d="m22 22-5-10-5 10" /><path d="M14 18h6" />
+        </svg>
+        {isTranslating ? t('translating') : t('translate')}
       </button>
 
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="absolute mt-2 right-0 w-56 rounded-xl bg-purple-950/95 border border-purple-700/40 shadow-xl shadow-purple-900/30 z-50 overflow-hidden backdrop-blur-md"
+            exit={{ opacity: 0, y: -6 }}
+            className="absolute mt-2 right-0 w-52 rounded-2xl bg-white border border-pink-200 shadow-lg shadow-pink-200/40 z-50 overflow-hidden"
           >
-            {LANGUAGES.map((lang) => (
+            {LANGUAGES.map((l) => (
               <button
-                key={lang.code}
-                onClick={() => handleSelect(lang.code)}
+                key={l.code}
+                onClick={() => handleSelect(l.code)}
                 className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                  selected === lang.code
-                    ? 'bg-purple-700/40 text-white'
-                    : 'text-purple-200 hover:bg-purple-800/40'
+                  lang === l.code
+                    ? 'bg-pink-100 text-pink-900 font-medium'
+                    : 'text-pink-700 hover:bg-pink-50'
                 }`}
               >
-                {lang.label}
+                {l.label}
               </button>
             ))}
           </motion.div>

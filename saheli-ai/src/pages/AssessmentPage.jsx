@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import NoiseOverlay from '../components/NoiseOverlay';
-import GlowCard from '../components/GlowCard';
 import ProgressBar from '../components/ProgressBar';
 import analyzeResponses from '../analysis/analyzeResponses';
+import { useTranslation } from '../context/TranslationContext';
+import TranslateButton from '../components/TranslateButton';
 
 /* ── slide animation variants ────────────────────────── */
 const slideVariants = {
@@ -17,8 +17,8 @@ const slideVariants = {
 function Field({ label, children, sub }) {
   return (
     <div className="mb-5">
-      <label className="block text-sm font-medium text-purple-100 mb-1.5">{label}</label>
-      {sub && <p className="text-xs text-purple-300/50 mb-1.5">{sub}</p>}
+      <label className="block text-sm font-medium text-pink-800 mb-1.5">{label}</label>
+      {sub && <p className="text-xs text-pink-400 mb-1.5">{sub}</p>}
       {children}
     </div>
   );
@@ -62,7 +62,7 @@ function SliderField({ label, value, onChange, min = 1, max = 10 }) {
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full"
       />
-      <div className="flex justify-between text-xs text-purple-400/50 mt-1">
+      <div className="flex justify-between text-xs text-pink-400 mt-1">
         <span>{min}</span>
         <span>{max}</span>
       </div>
@@ -79,10 +79,10 @@ function YesNo({ label, value, onChange }) {
             key={opt}
             type="button"
             onClick={() => onChange(opt)}
-            className={`px-5 py-2 rounded-xl text-sm font-medium border transition-all ${
+            className={`px-5 py-2 rounded-full text-sm font-medium border transition-all ${
               value === opt
-                ? 'bg-purple-600/50 border-purple-500/60 text-white shadow-md shadow-purple-700/20'
-                : 'bg-purple-900/20 border-purple-700/30 text-purple-300 hover:bg-purple-800/30'
+                ? 'bg-pink-500 border-pink-500 text-white'
+                : 'bg-white border-pink-200 text-pink-700 hover:bg-pink-50'
             }`}
           >
             {opt === 'yes' ? 'Yes' : 'No'}
@@ -108,10 +108,10 @@ function CheckboxGroup({ label, options, selected, onChange }) {
             key={opt}
             type="button"
             onClick={() => toggle(opt)}
-            className={`px-4 py-2 rounded-xl text-sm border transition-all ${
+            className={`px-4 py-2 rounded-full text-sm border transition-all ${
               selected.includes(opt)
-                ? 'bg-purple-600/50 border-purple-500/60 text-white'
-                : 'bg-purple-900/20 border-purple-700/30 text-purple-300 hover:bg-purple-800/30'
+                ? 'bg-pink-500 border-pink-500 text-white'
+                : 'bg-white border-pink-200 text-pink-700 hover:bg-pink-50'
             }`}
           >
             {opt}
@@ -127,6 +127,7 @@ const TOTAL_STEPS = 4; // basic → mode select → mode questions → review
 
 export default function AssessmentPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [dir, setDir] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -148,6 +149,11 @@ export default function AssessmentPage() {
     ironFoodFreq: '', greenVegIntake: '', vitaminCIntake: '',
     teaCoffeeAfterMeals: '', recentBloodTest: '', hemoglobinLevel: '',
     ironDeficiencyHistory: '',
+    // cancer awareness
+    breastLumps: '', breastDischarge: '', breastDimpling: '', breastPain: '',
+    breastFamilyHistory: '', lastBreastExam: '', breastSkinChanges: '',
+    irregularBleeding: '', postIntercourseBleeding: '', pelvicPain: '',
+    unusualDischarge: '', hpvStatus: '', lastPapSmear: '', cervicalFamilyHistory: '',
   });
 
   const set = (key) => (val) => setData((d) => ({ ...d, [key]: val }));
@@ -176,8 +182,8 @@ export default function AssessmentPage() {
       case 1:
         return (
           <div key="step1">
-            <h2 className="font-display text-2xl font-bold text-white mb-1">Basic Profile</h2>
-            <p className="text-sm text-purple-300/60 mb-6">Let's start with some general information about you.</p>
+            <h2 className="font-display text-2xl font-bold text-pink-900 mb-1">{t('basicTitle')}</h2>
+            <p className="text-sm text-pink-400 mb-6">{t('basicSub')}</p>
 
             <div className="grid gap-x-6 md:grid-cols-2">
               <Field label="Age">
@@ -190,16 +196,16 @@ export default function AssessmentPage() {
                 <NumberInput value={data.weight} onChange={set('weight')} min={25} max={200} placeholder="e.g. 58" />
               </Field>
               <Field label="BMI" sub="Auto-calculated from height & weight">
-                <div className="w-full px-4 py-2.5 rounded-xl bg-purple-900/30 border border-purple-700/20 text-purple-200">
+                <div className="w-full px-4 py-2.5 rounded-xl bg-pink-50 border border-pink-200 text-pink-800">
                   {bmi ? (
                     <span>
                       {bmi}{' '}
-                      <span className="text-xs text-purple-400">
+                      <span className="text-xs text-pink-400">
                         ({Number(bmi) < 18.5 ? 'Underweight' : Number(bmi) < 25 ? 'Normal' : Number(bmi) < 30 ? 'Overweight' : 'Obese'})
                       </span>
                     </span>
                   ) : (
-                    <span className="text-purple-400/40">Enter height & weight</span>
+                    <span className="text-pink-400">Enter height & weight</span>
                   )}
                 </div>
               </Field>
@@ -246,37 +252,46 @@ export default function AssessmentPage() {
       case 2:
         return (
           <div key="step2">
-            <h2 className="font-display text-2xl font-bold text-white mb-1">Choose Your Focus</h2>
-            <p className="text-sm text-purple-300/60 mb-8">Select the area you'd like us to assess in detail.</p>
+            <h2 className="font-display text-2xl font-bold text-pink-900 mb-1">{t('modeTitle')}</h2>
+            <p className="text-sm text-pink-400 mb-8">{t('modeSub')}</p>
 
-            <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
+            <div className="grid gap-6 md:grid-cols-3 max-w-3xl mx-auto">
               {[
                 {
                   key: 'period',
-                  title: 'Period & Hormones',
-                  desc: 'Menstrual health, cycle patterns, and hormonal indicators.',
+                  emoji: '🩸',
+                  title: t('periodModeTitle'),
+                  desc: t('periodModeDesc'),
                 },
                 {
                   key: 'anemia',
-                  title: 'Anemia & Nutrition',
-                  desc: 'Energy, iron levels, dietary patterns, and physical signs.',
+                  emoji: '🥗',
+                  title: t('anemiaModeTitle'),
+                  desc: t('anemiaModeDesc'),
+                },
+                {
+                  key: 'cancer',
+                  emoji: '🎀',
+                  title: t('cancerModeTitle'),
+                  desc: t('cancerModeDesc'),
                 },
               ].map((m) => (
                 <button
                   key={m.key}
                   type="button"
                   onClick={() => set('mode')(m.key)}
-                  className={`glow-card p-8 text-center transition-all duration-300 cursor-pointer ${
+                  className={`py-8 px-6 text-center transition-all duration-300 cursor-pointer rounded-2xl ${
                     data.mode === m.key
-                      ? 'border-purple-400/60 shadow-lg shadow-purple-600/20 scale-[1.02]'
-                      : 'hover:border-purple-500/30'
+                      ? 'bg-pink-50 border-2 border-pink-400'
+                      : 'border-2 border-transparent hover:bg-pink-50/40'
                   }`}
                 >
-                  <h3 className="text-lg font-semibold text-white mb-2 font-display">{m.title}</h3>
-                  <p className="text-sm text-purple-200/60">{m.desc}</p>
+                  <span className="text-2xl mb-3 block">{m.emoji}</span>
+                  <h3 className="text-lg font-semibold text-pink-800 mb-2 font-display">{m.title}</h3>
+                  <p className="text-sm text-pink-500">{m.desc}</p>
                   {data.mode === m.key && (
-                    <div className="mt-4 inline-block px-3 py-1 rounded-full bg-purple-600/40 text-purple-200 text-xs font-medium">
-                      Selected
+                    <div className="mt-4 inline-block px-3 py-1 rounded-full bg-pink-500 text-white text-xs font-medium">
+                      {t('selected')}
                     </div>
                   )}
                 </button>
@@ -290,8 +305,8 @@ export default function AssessmentPage() {
         if (data.mode === 'period') {
           return (
             <div key="step3-period">
-              <h2 className="font-display text-2xl font-bold text-white mb-1">Period & Hormones</h2>
-              <p className="text-sm text-purple-300/60 mb-6">Help us understand your menstrual health patterns.</p>
+              <h2 className="font-display text-2xl font-bold text-pink-900 mb-1">{t('periodTitle')}</h2>
+              <p className="text-sm text-pink-400 mb-6">{t('periodSub')}</p>
 
               <div className="grid gap-x-6 md:grid-cols-2">
                 <Field label="Age at First Period (menarche)">
@@ -350,10 +365,11 @@ export default function AssessmentPage() {
         }
 
         // Anemia mode
+        if (data.mode === 'anemia') {
         return (
           <div key="step3-anemia">
-            <h2 className="font-display text-2xl font-bold text-white mb-1">Anemia & Nutrition</h2>
-            <p className="text-sm text-purple-300/60 mb-6">Let's look at your energy and nutrition patterns.</p>
+            <h2 className="font-display text-2xl font-bold text-pink-900 mb-1">{t('anemiaTitle')}</h2>
+            <p className="text-sm text-pink-400 mb-6">{t('anemiaSub')}</p>
 
             <div className="grid gap-x-6 md:grid-cols-2">
               <SliderField label="Fatigue Level" value={data.fatigueLevel} onChange={set('fatigueLevel')} />
@@ -413,18 +429,93 @@ export default function AssessmentPage() {
             </div>
           </div>
         );
+        }
+
+        // Cancer awareness mode
+        return (
+          <div key="step3-cancer">
+            <h2 className="font-display text-2xl font-bold text-pink-900 mb-1">{t('cancerTitle')}</h2>
+            <p className="text-sm text-pink-400 mb-6">{t('cancerSub')}</p>
+
+            <div className="border-l-2 border-pink-300 pl-4 py-2 mb-6">
+              <p className="text-xs text-pink-500/80">
+                These questions help you build awareness — they are <strong className="text-pink-700">not a screening tool</strong>.
+                Any concern should be discussed with a healthcare professional.
+              </p>
+            </div>
+
+            <h3 className="text-sm font-semibold text-pink-700 uppercase tracking-wider mb-4">Breast Health</h3>
+            <div className="grid gap-x-6 md:grid-cols-2">
+              <YesNo label="Have you noticed any lumps or thickening in your breast or underarm area?" value={data.breastLumps} onChange={set('breastLumps')} />
+              <YesNo label="Any unusual nipple discharge?" value={data.breastDischarge} onChange={set('breastDischarge')} />
+              <YesNo label="Any dimpling or puckering of the breast skin?" value={data.breastDimpling} onChange={set('breastDimpling')} />
+              <YesNo label="Persistent breast pain (not related to your period)?" value={data.breastPain} onChange={set('breastPain')} />
+              <YesNo label="Any changes in nipple shape, direction, or skin texture?" value={data.breastSkinChanges} onChange={set('breastSkinChanges')} />
+              <YesNo label="Family history of breast cancer?" value={data.breastFamilyHistory} onChange={set('breastFamilyHistory')} />
+              <Field label="When was your last breast exam or mammogram?">
+                <Select
+                  value={data.lastBreastExam}
+                  onChange={set('lastBreastExam')}
+                  placeholder="Select…"
+                  options={[
+                    { value: 'within_year', label: 'Within the last year' },
+                    { value: '1_3_years', label: '1–3 years ago' },
+                    { value: 'over_3_years', label: 'More than 3 years ago' },
+                    { value: 'never', label: 'Never had one' },
+                  ]}
+                />
+              </Field>
+            </div>
+
+            <div className="mt-8">
+              <h3 className="text-sm font-semibold text-pink-700 uppercase tracking-wider mb-4">Cervical Health</h3>
+              <div className="grid gap-x-6 md:grid-cols-2">
+                <YesNo label="Irregular bleeding between periods?" value={data.irregularBleeding} onChange={set('irregularBleeding')} />
+                <YesNo label="Bleeding after intercourse?" value={data.postIntercourseBleeding} onChange={set('postIntercourseBleeding')} />
+                <YesNo label="Persistent pelvic pain?" value={data.pelvicPain} onChange={set('pelvicPain')} />
+                <YesNo label="Unusual or persistent vaginal discharge?" value={data.unusualDischarge} onChange={set('unusualDischarge')} />
+                <YesNo label="Family history of cervical cancer?" value={data.cervicalFamilyHistory} onChange={set('cervicalFamilyHistory')} />
+                <Field label="HPV vaccination status">
+                  <Select
+                    value={data.hpvStatus}
+                    onChange={set('hpvStatus')}
+                    placeholder="Select…"
+                    options={[
+                      { value: 'vaccinated', label: 'Vaccinated' },
+                      { value: 'not_vaccinated', label: 'Not vaccinated' },
+                      { value: 'unsure', label: 'Not sure' },
+                    ]}
+                  />
+                </Field>
+                <Field label="When was your last Pap smear?">
+                  <Select
+                    value={data.lastPapSmear}
+                    onChange={set('lastPapSmear')}
+                    placeholder="Select…"
+                    options={[
+                      { value: 'within_year', label: 'Within the last year' },
+                      { value: '1_3_years', label: '1–3 years ago' },
+                      { value: 'over_3_years', label: 'More than 3 years ago' },
+                      { value: 'never', label: 'Never had one' },
+                    ]}
+                  />
+                </Field>
+              </div>
+            </div>
+          </div>
+        );
 
       /* ── STEP 4: Review ───────────────────────────── */
       case 4:
         return (
           <div key="step4">
-            <h2 className="font-display text-2xl font-bold text-white mb-1">Review & Submit</h2>
-            <p className="text-sm text-purple-300/60 mb-6">Please review your responses before we analyze them.</p>
+            <h2 className="font-display text-2xl font-bold text-pink-900 mb-1">{t('reviewTitle')}</h2>
+            <p className="text-sm text-pink-400 mb-6">{t('reviewSub')}</p>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Basic summary */}
-              <GlowCard className="!p-5">
-                <h3 className="text-sm font-semibold text-purple-300 uppercase tracking-wider mb-3">Basic Profile</h3>
+              <div className="py-5">
+                <h3 className="text-sm font-semibold text-pink-500 uppercase tracking-wider mb-3">{t('yourProfile')}</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                   {[
                     ['Age', data.age],
@@ -438,30 +529,34 @@ export default function AssessmentPage() {
                     ['Water', `${data.waterIntake} glasses`],
                   ].map(([k, v]) => (
                     <div key={k}>
-                      <span className="text-purple-400/60">{k}:</span>{' '}
-                      <span className="text-purple-100">{v || '—'}</span>
+                      <span className="text-pink-400">{k}:</span>{' '}
+                      <span className="text-pink-800">{v || '—'}</span>
                     </div>
                   ))}
                 </div>
-              </GlowCard>
+              </div>
+
+              <div className="border-t border-pink-100" />
 
               {/* Mode summary */}
-              <GlowCard className="!p-5">
-                <h3 className="text-sm font-semibold text-purple-300 uppercase tracking-wider mb-3">
-                  {data.mode === 'period' ? 'Period & Hormones' : 'Anemia & Nutrition'}
+              <div className="py-5">
+                <h3 className="text-sm font-semibold text-pink-500 uppercase tracking-wider mb-3">
+                  {data.mode === 'period' ? t('periodModeTitle') : data.mode === 'anemia' ? t('anemiaModeTitle') : t('cancerModeTitle')}
                 </h3>
-                <p className="text-sm text-purple-200/70">
+                <p className="text-sm text-pink-700">
                   {data.mode === 'period'
                     ? `Cycle: ${data.cycleLength || '—'} days, ${data.cycleRegularity || '—'}, Flow: ${data.flowIntensity || '—'}, Pain: ${data.painScale}/10, PMS: ${data.pmsSymptoms.length > 0 ? data.pmsSymptoms.join(', ') : 'None selected'}`
-                    : `Fatigue: ${data.fatigueLevel}/10, Iron foods: ${data.ironFoodFreq || '—'}, Greens: ${data.greenVegIntake || '—'}, Hb: ${data.hemoglobinLevel || 'Unknown'}`
+                    : data.mode === 'anemia'
+                    ? `Fatigue: ${data.fatigueLevel}/10, Iron foods: ${data.ironFoodFreq || '—'}, Greens: ${data.greenVegIntake || '—'}, Hb: ${data.hemoglobinLevel || 'Unknown'}`
+                    : `Breast: lumps ${data.breastLumps || '—'}, family history ${data.breastFamilyHistory || '—'}, last exam ${data.lastBreastExam || '—'} · Cervical: HPV ${data.hpvStatus || '—'}, last Pap ${data.lastPapSmear || '—'}`
                   }
                 </p>
-              </GlowCard>
+              </div>
 
               {/* Disclaimer */}
-              <div className="rounded-xl bg-pink-950/20 border border-pink-400/15 px-5 py-4 text-center">
-                <p className="text-xs text-pink-200/60">
-                  By submitting, you understand this is <strong className="text-pink-200">not a medical diagnosis</strong>. Results are guidance-based patterns only.
+              <div className="border-l-2 border-pink-300 pl-4 py-2 mt-4">
+                <p className="text-xs text-pink-500/80">
+                  {t('notDiagnosis')}
                 </p>
               </div>
             </div>
@@ -480,23 +575,23 @@ export default function AssessmentPage() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      <NoiseOverlay />
-      <div className="absolute top-[-15%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-700/8 blur-[100px] pointer-events-none" />
-
-      <div className="relative z-10 max-w-3xl mx-auto px-4 py-10">
+    <div className="min-h-screen">
+      <div className="max-w-3xl mx-auto px-5 py-10">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <button
-            onClick={() => step === 1 ? navigate('/') : prev()}
-            className="text-purple-400 hover:text-purple-200 transition-colors text-sm"
-          >
-            ← {step === 1 ? 'Home' : 'Back'}
-          </button>
-          <span className="text-purple-600/40">|</span>
-          <h1 className="font-display text-lg font-semibold bg-gradient-to-r from-purple-200 to-pink-200 bg-clip-text text-transparent">
-            AETERNUM
-          </h1>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => step === 1 ? navigate('/') : prev()}
+              className="text-pink-400 hover:text-pink-700 transition-colors text-sm"
+            >
+              ← {step === 1 ? t('home') : t('back')}
+            </button>
+            <span className="text-pink-300">|</span>
+            <h1 className="font-display text-lg font-semibold text-pink-800">
+              {t('brand')}
+            </h1>
+          </div>
+          <TranslateButton />
         </div>
 
         <ProgressBar current={step} total={TOTAL_STEPS} />
@@ -521,44 +616,44 @@ export default function AssessmentPage() {
           <button
             onClick={prev}
             disabled={step === 1}
-            className={`px-6 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+            className={`px-6 py-2.5 rounded-full text-sm font-medium border transition-all ${
               step === 1
-                ? 'border-purple-800/20 text-purple-600/30 cursor-not-allowed'
-                : 'border-purple-600/30 text-purple-300 hover:bg-purple-800/30'
+                ? 'border-pink-200 text-pink-300 cursor-not-allowed'
+                : 'border-pink-300 text-pink-700 hover:bg-pink-100'
             }`}
           >
-            ← Previous
+            {t('previous')}
           </button>
 
           {step < TOTAL_STEPS ? (
             <button
               onClick={next}
               disabled={!canProceed()}
-              className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 canProceed()
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-white shadow-md shadow-purple-700/30 hover:shadow-purple-600/40 hover:scale-[1.02]'
-                  : 'bg-purple-900/30 text-purple-500/40 cursor-not-allowed'
+                  ? 'bg-pink-500 text-white hover:bg-pink-600'
+                  : 'bg-pink-200 text-pink-400 cursor-not-allowed'
               }`}
             >
-              Next →
+              {t('next')}
             </button>
           ) : (
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="px-8 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 text-white shadow-lg shadow-purple-700/30 hover:shadow-purple-600/50 transition-all hover:scale-[1.02] disabled:opacity-50"
+              className="px-8 py-2.5 rounded-full text-sm font-semibold bg-pink-500 text-white hover:bg-pink-600 transition-all disabled:opacity-50"
             >
               {submitting ? (
                 <span className="flex items-center gap-2">
                   <motion.span
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                    className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                    className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
                   />
-                  Analyzing…
+                  {t('analyzing')}
                 </span>
               ) : (
-                'Analyze My Health →'
+                t('submit')
               )}
             </button>
           )}

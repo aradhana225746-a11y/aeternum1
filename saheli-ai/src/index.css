@@ -9,35 +9,21 @@ html {
 
 body {
   font-family: 'Poppins', system-ui, sans-serif;
-  background: linear-gradient(165deg, #0f0618 0%, #1a0a2e 40%, #12071f 100%);
+  background: #fce4ec;
   min-height: 100vh;
-  color: #e8dff5;
+  color: #3d3d3d;
+  font-size: 16px;
 }
 
-/* ── Noise / grain overlay ────────────────────────────── */
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 200px 200px;
+/* ── Soft section (no card, just spacing) ─────────────── */
+.soft-card {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  transition: none;
 }
-
-/* ── Glow card ────────────────────────────────────────── */
-.glow-card {
-  background: rgba(88, 28, 135, 0.15);
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  border-radius: 1.25rem;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.08), 0 0 60px rgba(168, 85, 247, 0.04);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-}
-.glow-card:hover {
-  border-color: rgba(168, 85, 247, 0.35);
-  box-shadow: 0 0 40px rgba(168, 85, 247, 0.15), 0 0 80px rgba(168, 85, 247, 0.06);
+.soft-card:hover {
+  box-shadow: none;
 }
 
 /* ── Custom slider thumb ──────────────────────────────── */
@@ -47,7 +33,7 @@ input[type='range'] {
   height: 6px;
   border-radius: 999px;
   outline: none;
-  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  background: linear-gradient(90deg, #f8bbd0, #e8636f);
 }
 
 input[type='range']::-webkit-slider-thumb {
@@ -56,20 +42,20 @@ input[type='range']::-webkit-slider-thumb {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  background: #e8636f;
   cursor: pointer;
-  border: 3px solid rgba(255,255,255,0.9);
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(232, 99, 111, 0.25);
 }
 
 input[type='range']::-moz-range-thumb {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  background: #e8636f;
   cursor: pointer;
-  border: 3px solid rgba(255,255,255,0.9);
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(232, 99, 111, 0.25);
 }
 
 /* ── Custom scrollbar ─────────────────────────────────── */
@@ -77,41 +63,73 @@ input[type='range']::-moz-range-thumb {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 6, 24, 0.5);
+  background: #fce4ec;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);
+  background: #f48fb1;
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.5);
+  background: #e8636f;
 }
 
 /* ── Selection color ──────────────────────────────────── */
 ::selection {
-  background: rgba(168, 85, 247, 0.4);
-  color: #fff;
+  background: rgba(232, 99, 111, 0.2);
+  color: #2d3436;
 }
 
 /* ── Form inputs ──────────────────────────────────────── */
 input[type="number"],
 input[type="text"],
 select {
-  background: rgba(88, 28, 135, 0.2);
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  background: #ffffff;
+  border: 1px solid #f8bbd0;
   border-radius: 0.75rem;
-  color: #e8dff5;
+  color: #3d3d3d;
   padding: 0.6rem 1rem;
+  font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 input[type="number"]:focus,
 input[type="text"]:focus,
 select:focus {
-  border-color: rgba(168, 85, 247, 0.6);
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.2);
+  border-color: #e8636f;
+  box-shadow: 0 0 0 3px rgba(232, 99, 111, 0.15);
 }
 select option {
-  background: #1a0a2e;
-  color: #e8dff5;
+  background: #ffffff;
+  color: #3d3d3d;
+}
+
+/* ── Read-aloud button pulse ──────────────────────────── */
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.reading-active {
+  animation: gentle-pulse 1.5s ease-in-out infinite;
+}
+
+/* ── Sparkle dots for hero section ────────────────────── */
+.sparkle-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 99, 111, 0.7), rgba(167, 139, 250, 0.4));
+  animation: sparkle-float 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle-float {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) translateY(-6px);
+  }
 }
