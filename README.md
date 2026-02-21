@@ -80,7 +80,7 @@ The app is designed with accessibility at its core: a **multilingual voice assis
 
 ## 🎬 Demo Video
 
-> **[📹 Watch Demo Video](#)** *(Add your video link here — upload to YouTube, Loom, or Google Drive)*
+> **[📹 Watch Demo Video](#)** *https://docs.google.com/document/d/1K--U7WIShXVK9yw0nsZgEzNWok19qX7fDoxYx_OniJg/edit?usp=sharing*
 
 The demo should show:
 - Landing page with sparkle animations
